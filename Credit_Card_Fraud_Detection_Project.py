@@ -10,8 +10,6 @@
 
 # <b> Importing the libraries
 
-# In[1]:
-
 
 # Imported Libraries
 
@@ -48,20 +46,10 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# In[2]:
-
-
 # Reading the dataset in credit_data
 credit_data = pd.read_csv('/Users/ashutoshshanker/Downloads/creditcard.csv')
 
-
-# In[3]:
-
-
 credit_data.head()
-
-
-# In[4]:
 
 
 # Columns in the dataset
@@ -70,8 +58,6 @@ credit_data.columns
 
 # <b> Data Preprocessing
 
-# In[5]:
-
 
 # Finding the count and percentage of missing values
 missing_data = pd.DataFrame([credit_data.isnull().sum(), credit_data.isnull().sum()* 100.0/credit_data.shape[0]]).T
@@ -79,14 +65,8 @@ missing_data.columns = ['missing_count', 'missing_percentage']
 missing_data
 
 
-# In[6]:
-
-
 # Summary Statistics of the dataset
 credit_data.describe().T
-
-
-# In[7]:
 
 
 # Count of fraudulent and non-fraudulent transactions
@@ -94,9 +74,6 @@ credit_data["Class"].value_counts()
 
 
 # There are 492 fraud cases and 284315 non-fraud cases. This shows that the dataset is unbalanced and so, for the purpose of prediction, we need to have a equal distribution of both fraud and non-fraud cases.
-
-# In[8]:
-
 
 # Plot showing fraudulent and non-fraudulent transactions 
 import seaborn as sns
@@ -108,15 +85,8 @@ plt.show()
 
 # # Correlation between the columns
 
-# In[9]:
-
-
 # Correlation between the columns
 credit_data.corr()
-
-
-# In[10]:
-
 
 # heatmap to find any high correlations
 
@@ -127,9 +97,6 @@ plt.show();
 
 # # Pearson's Correlation
 
-# In[11]:
-
-
 plt.figure(figsize=(8,2))
 credit_data.corr()['Class'].sort_values()[:-1].plot(kind='bar')
 plt.show()
@@ -137,9 +104,6 @@ plt.show()
 
 # # Distribution
 # Here, we will find the distribution to understand the skewness of data in amount and time column
-
-# In[12]:
-
 
 fig, ax = plt.subplots(1, 2, figsize=(18,4))
 
@@ -155,17 +119,11 @@ ax[1].set_title('Distribution of Transaction Time', fontsize=14)
 ax[1].set_xlim([min(time_val), max(time_val)])
 
 
-# In[13]:
-
-
 # Record Counts
 credit_data.count()
 
 
 # <b> Histogram Plot
-
-# In[14]:
-
 
 # Histogram Plot
 credit_data.hist(figsize=(20, 20));
@@ -173,13 +131,7 @@ credit_data.hist(figsize=(20, 20));
 
 # <b> Boxplot
 
-# In[15]:
-
-
 data_box=credit_data.drop('Class',axis=1)
-
-
-# In[16]:
 
 
 # distribution of the features and target
@@ -190,9 +142,6 @@ for i in cols:
 
 
 # <b> Since most of the columns has already been scaled we should scale the columns that are left to scale i.e. Amount and Time columns
-
-# In[17]:
-
 
 # Scaling the columns using StandardScaler, RobustScaler
 from sklearn.preprocessing import StandardScaler, RobustScaler
@@ -210,14 +159,8 @@ credit_data.drop(['Time','Amount'], axis=1, inplace=True)
 
 # # Distribution of fradulent and non-fraudulent data
 
-# In[18]:
-
-
 # Percentage of fradulent and non-fraudulent data
 pd.DataFrame(credit_data["Class"].value_counts(), credit_data["Class"].value_counts()*100/len(credit_data["Class"]))
-
-
-# In[19]:
 
 
 # Bar plot showing the class ditribution before undersampling
@@ -235,15 +178,8 @@ plt.title('Class Distributions \n (0: No Fraud || 1: Fraud)', fontsize=14)
 # 
 # Note: The main issue with "Random Under-Sampling" is that we run the risk that our classification models will not perform as accurate as we would like to since there is a great deal of information loss 
 
-# In[20]:
-
-
 X = credit_data.ix[:, credit_data.columns != 'Class']
 y = credit_data.ix[:, credit_data.columns == 'Class']
-
-
-# In[21]:
-
 
 # Number of data points in the minority class
 number_records_fraud = len(credit_data[credit_data.Class == 1])
@@ -271,9 +207,6 @@ print("Percentage of fraud transactions: ", len(under_sample_data[under_sample_d
 print("Total number of transactions in resampled data: ", len(under_sample_data))
 
 
-# In[22]:
-
-
 # Bar plot showing the class ditribution after undersampling
 colors = ["#0101DF", "#DF0101"]
 
@@ -282,9 +215,6 @@ plt.title('Class Distributions \n (0: No Fraud || 1: Fraud)', fontsize=14)
 
 
 # # Data Prediction
-
-# In[23]:
-
 
 # Dividing the dataset into training and testing data:
 
@@ -313,14 +243,8 @@ print(f"y_test_undersample: {y_test_undersample.shape}")
 
 # <b> Logistic Regression on original data
 
-# In[24]:
-
-
 logreg = LogisticRegression()
 logreg.fit(X_train, y_train)
-
-
-# In[25]:
 
 
 y_pred = logreg.predict(X_test)
@@ -329,22 +253,13 @@ print('Accuracy of logistic regression classifier on test set: {:.2f}'.format(lo
 
 # <b> Logistic Regression on undersampled data
 
-# In[26]:
-
-
 logreg = LogisticRegression()
 logreg.fit(X_train_undersample, y_train_undersample)
-
-
-# In[27]:
 
 
 # Accuracy of model
 y_pred_undersample = logreg.predict(X_test_undersample)
 print('Accuracy of logistic regression classifier on test set: {:.2f}'.format(logreg.score(X_test_undersample, y_test_undersample)))
-
-
-# In[28]:
 
 
 # Confusion Matrix
@@ -353,15 +268,9 @@ confusion_matrix = confusion_matrix(y_test_undersample, y_pred_undersample)
 print(confusion_matrix)
 
 
-# In[29]:
-
-
 # Calculating the precision, recall, f1-score, and support
 from sklearn.metrics import classification_report
 print(classification_report(y_test_undersample, y_pred_undersample))
-
-
-# In[30]:
 
 
 # ROC curve
@@ -384,27 +293,14 @@ plt.show()
 
 # # Decision Tree
 
-# In[31]:
-
-
 from sklearn.tree import DecisionTreeClassifier
 classifier = DecisionTreeClassifier()
-
-
-# In[32]:
 
 
 # Decision tree model on original dataset
 classifier.fit(X_train, y_train)
 
-
-# In[33]:
-
-
 y_pred_dt = classifier.predict(X_test)
-
-
-# In[34]:
 
 
 from sklearn.metrics import classification_report, confusion_matrix
@@ -419,22 +315,12 @@ print(classification_report(y_test, y_pred_dt))
 
 # <b> Decision Tree on undersampled data
 
-# In[35]:
-
-
 from sklearn.tree import DecisionTreeClassifier
 classifier = DecisionTreeClassifier()
 classifier.fit(X_train_undersample, y_train_undersample)
 
 
-# In[36]:
-
-
 y_pred_undersample_dt = classifier.predict(X_test_undersample)
-
-
-# In[37]:
-
 
 from sklearn.metrics import classification_report, confusion_matrix
 
@@ -448,51 +334,26 @@ print(classification_report(y_test_undersample, y_pred_undersample_dt))
 
 # # Naive Bayes
 
-# In[38]:
-
-
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score
 model = GaussianNB()
 
-
-# In[39]:
-
-
 # Naive Bayes on original Data
 model.fit(X_train, y_train)
 
-
-# In[40]:
-
-
 y_pred_NB = model.predict(X_test)
 y_pred_NB
-
-
-# In[41]:
-
 
 accuracy = accuracy_score(y_test,y_pred_NB)*100
 accuracy
 
 
-# In[42]:
-
-
 # Naive Bayes on undersampled Data
 model.fit(X_train_undersample, y_train_undersample)
 
-
-# In[43]:
-
-
 y_pred_undersample_NB = model.predict(X_test_undersample)
 y_pred_undersample_NB
-
-
-# In[44]:
 
 
 accuracy_undersample = accuracy_score(y_test_undersample,y_pred_undersample_NB)*100
@@ -501,16 +362,10 @@ accuracy_undersample
 
 # # SVM
 
-# In[45]:
-
-
-from sklearn import svm
 
 #Create a svm Classifier
 clf = svm.SVC(kernel='linear') # Linear Kernel
 
-
-# In[ ]:
 
 
 #SVM on original dataset takes long time to run hence, I have commented this code:
@@ -522,15 +377,11 @@ clf = svm.SVC(kernel='linear') # Linear Kernel
 #y_pred_svm = clf.predict(X_test)
 
 
-# In[ ]:
 
 
 #Accuracy_svm = metrics.accuracy_score(y_test, y_pred_svm)
 #Precision_svm = metrics.precision_score(y_test, y_pred)
 #Recall_svm = metrics.recall_score(y_test, y_pred)
-
-
-# In[46]:
 
 
 # SVM on undersampled dataset
@@ -541,9 +392,6 @@ clf.fit(X_train_undersample, y_train_undersample)
 y_pred_undersample_svm = clf.predict(X_test_undersample)
 
 
-# In[47]:
-
-
 # Calculating Accuracy, Precision, and Recall
 Accuracy_svm = metrics.accuracy_score(y_test_undersample, y_pred_undersample_svm)
 Precision_svm = metrics.precision_score(y_test_undersample, y_pred_undersample_svm)
@@ -552,16 +400,8 @@ Recall_svm = metrics.recall_score(y_test_undersample, y_pred_undersample_svm)
 # Accuracy
 Accuracy_svm
 
-
-# In[48]:
-
-
 # Precision
 Precision_svm
-
-
-# In[49]:
-
 
 # Recall
 Recall_svm
@@ -569,49 +409,24 @@ Recall_svm
 
 # # Neural Network
 
-# In[50]:
-
-
 from sklearn.neural_network import MLPClassifier
 clf = MLPClassifier(solver='lbfgs', alpha=1e-5,hidden_layer_sizes=(5, 2), random_state=1)
-
-
-# In[51]:
 
 
 # Neural Network on original dataset
 clf.fit(X_train, y_train)
 
 
-# In[52]:
-
-
 y_pred_NN = clf.predict(X_test)
-
-
-# In[53]:
-
 
 # Accuracy
 Accuracy_NN = metrics.accuracy_score(y_test, y_pred_NN)
 Accuracy_NN
 
-
-# In[54]:
-
-
 # Neural Network on undersampled data
 clf.fit(X_train_undersample, y_train_undersample)
 
-
-# In[55]:
-
-
 y_pred_undersample_NN = clf.predict(X_test_undersample)
-
-
-# In[56]:
-
 
 # Accuracy
 Accuracy_undersample_NN = metrics.accuracy_score(y_test_undersample, y_pred_undersample_NN)
@@ -622,23 +437,14 @@ Accuracy_undersample_NN
 
 # # Performing Feature Selection
 
-# In[57]:
-
-
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import SelectFromModel
-
-
-# In[58]:
 
 
 feat_labels = ['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10', 'V11',
        'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18', 'V19', 'V20', 'V21',
        'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 'V28', 
        'scaled_amount', 'scaled_time']
-
-
-# In[59]:
 
 
 # For undersample
@@ -653,9 +459,6 @@ for feature in zip(feat_labels, clf.feature_importances_):
     print(feature)
 
 
-# In[60]:
-
-
 # Create a selector object that will use the random forest classifier to identify
 # features that have an importance of more than 0.15
 sfm = SelectFromModel(clf, threshold=0.15)
@@ -664,24 +467,15 @@ sfm = SelectFromModel(clf, threshold=0.15)
 sfm.fit(X_train_undersample, y_train_undersample)
 
 
-# In[61]:
-
-
 # Print the names of the most important features
 for feature_list_index in sfm.get_support(indices=True):
     print(feat_labels[feature_list_index])
-
-
-# In[62]:
 
 
 # Transform the data to create a new dataset containing only the most important features
 # Note: We have to apply the transform to both the training X and test X data.
 X_important_train_undersample = sfm.transform(X_train_undersample)
 X_important_test_undersample = sfm.transform(X_test_undersample)
-
-
-# In[63]:
 
 
 # Create a new random forest classifier for the most important features
@@ -691,9 +485,6 @@ clf_important = RandomForestClassifier(n_estimators=10000, random_state=0, n_job
 clf_important.fit(X_important_train_undersample, y_train_undersample)
 
 
-# In[64]:
-
-
 # Apply The Full Featured Classifier To The Test Data
 y_pred_undersample = clf.predict(X_test_undersample)
 
@@ -701,17 +492,11 @@ y_pred_undersample = clf.predict(X_test_undersample)
 accuracy_score(y_test_undersample, y_pred_undersample)
 
 
-# In[65]:
-
-
 # Apply The Full Featured Classifier To The Test Data
 y_important_pred_undersample = clf_important.predict(X_important_test_undersample)
 
 # View The Accuracy Of Our Limited Feature (2 Features) Model
 accuracy_score(y_test_undersample, y_important_pred_undersample)
-
-
-# In[ ]:
 
 
 # conda install -c conda-forge imbalanced-learn
